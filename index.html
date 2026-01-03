@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Phasewell • Nerva v5</title>
+  <meta name="description" content="Nerva v5 — Quick Guide + Technical Note + Quadrant Tool. Download PDFs or open the interactive demo." />
+
+  <style>
+    :root{
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --ink:#0b1220;
+      --muted:#475569;
+      --border:#e5e7eb;
+      --shadow:0 10px 30px rgba(15,23,42,.08);
+      --radius:22px;
+
+      --blue:#2563eb;
+      --sky:#3b82f6;
+      --red:#ef4444;
+      --green:#16a34a;
+      --purple:#7c3aed;
+      --black:#0b1220;
+
+      --btn:#0b1220;
+      --btn2:#2563eb;
+      --btn3:#16a34a;
+      --btn4:#7c3aed;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink);
+      background:var(--bg);
+      line-height:1.35;
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:18px 16px 48px;
+    }
+
+    .shell{
+      background:linear-gradient(180deg,#f8fafc 0%, #f4f6fb 100%);
+      border:1px solid #dbe1ea;
+      border-radius:34px;
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .topbar{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:18px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:210px;
+    }
+
+    .logo{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      border:1px solid #dbe1ea;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      background:#fff;
+      flex:0 0 auto;
+    }
+    .logo img{
+      width:70%;
+      height:auto;
+      display:block;
+    }
+
+    .titleBlock{
+      flex:1;
+      min-width:220px;
+    }
+
+    .title{
+      font-size:30px;
+      font-weight:800;
+      letter-spacing:-.02em;
+      margin:0;
+      line-height:1.1;
+    }
+
+    .subtitle{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:14.5px;
+      font-weight:600;
+    }
+
+    .desc{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .rightLogo{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:12px;
+      min-width:100px;
+    }
+
+    .chips{
+      margin:14px 0 0;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:28px;
+      padding:12px 12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+    }
+
+    .chip{
+      padding:8px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      color:#fff;
+      white-space:nowrap;
+      box-shadow:0 6px 16px rgba(2,6,23,.08);
+    }
+    .chip.blue{background:var(--blue)}
+    .chip.sky{background:var(--sky)}
+    .chip.red{background:var(--red)}
+    .chip.green{background:var(--green)}
+    .chip.purple{background:var(--purple)}
+
+    .grid{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+    }
+
+    .card h2{
+      margin:0 0 6px;
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:-.01em;
+    }
+
+    .card p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .actions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+
+    .btn{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 16px;
+      border-radius:18px;
+      font-size:15px;
+      font-weight:800;
+      border:1px solid rgba(255,255,255,.14);
+      color:#fff;
+      text-decoration:none;
+      transition:transform .08s ease, filter .12s ease;
+      user-select:none;
+    }
+    .btn:hover{transform:translateY(-1px); filter:saturate(1.05);}
+    .btn:active{transform:translateY(0px);}
+
+    .btn .small{
+      font-size:12px;
+      opacity:.86;
+      font-weight:600;
+    }
+
+    .btn.dark{background:var(--btn)}
+    .btn.blue{background:var(--btn2)}
+    .btn.green{background:var(--btn3)}
+    .btn.purple{background:var(--btn4)}
+    .btn.gray{background:#334155}
+
+    .footer{
+      margin-top:16px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .emailBox{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .emailBox input{
+      flex:1;
+      min-width:220px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      font-size:14px;
+    }
+    .emailBox button{
+      padding:12px 14px;
+      border-radius:14px;
+      border:0;
+      background:var(--black);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+    }
+
+    /* Desktop layout */
+    @media(min-width:860px){
+      .grid{
+        grid-template-columns:1.2fr .8fr;
+        align-items:start;
+      }
+      .actions{
+        grid-template-columns:1fr;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="shell">
+
+      <!-- Header -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">
+            <!-- Replace with your Phasewell logo file if you have it -->
+            <img src="phasewell.png" alt="Phasewell" onerror="this.style.display='none'">
+          </div>
+          <div class="titleBlock">
+            <h1 class="title">Nerva v5 — Quick Guide</h1>
+            <div class="subtitle">Quadrants + phase (φ) + validity (EV × Integrity) • 2-page guide</div>
+            <div class="desc">Phasewell supports users in the design systems and events that survive their own extremes.</div>
+          </div>
+        </div>
+
+        <div class="rightLogo">
+          <div class="logo">
+            <!-- Replace with your Nerva logo file if you have it -->
+            <img src="nerva.png" alt="Nerva" onerror="this.style.display='none'">
+          </div>
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div class="chips">
+        <div class="chip blue">E+S = Intent (x)</div>
+        <div class="chip sky">R = Risk (y)</div>
+        <div class="chip red">τ / DII = Threshold</div>
+        <div class="chip green">EV = Net Value</div>
+        <div class="chip purple">Integrity = Support × Stability</div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid">
+
+        <!-- Left: About / Info -->
+        <div class="card">
+          <h2>Launch Hub</h2>
+          <p>
+            Use the buttons on the right to download the PDFs or open the interactive Quadrant Tool.
+            This page is optimized for mobile and safe to host as a static site.
+          </p>
+
+          <div class="footer" style="margin-top:12px;">
+            Tip: Users can print the HTML to PDF (File → Print → Save as PDF). Turn <b>Background graphics ON</b>.
+          </div>
+
+          <!-- Optional Email Capture Placeholder -->
+          <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+            <h2 style="margin-bottom:6px;">Optional: Email updates (placeholder)</h2>
+            <p style="margin-bottom:10px;">
+              This does NOT store anything by default. If you want real capture + analytics, we’ll connect it to Mailchimp/Buttondown/Formspree later.
+            </p>
+            <form class="emailBox" onsubmit="event.preventDefault(); alert('Placeholder only — connect a form service to store emails.');">
+              <input type="email" placeholder="Enter email (optional)" />
+              <button type="submit">Notify me</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <div class="card">
+          <h2>Downloads + Tools</h2>
+          <p style="margin-bottom:12px;">Everything here is hosted directly by Vercel. PDFs will download.</p>
+
+          <div class="actions">
+
+            <!-- Quick Guide PDF -->
+            <a class="btn dark" href="Nerva_v5_Quick_Guide_Phasewell.pdf" download>
+              <div>
+                Download Quick Guide (PDF)
+                <div class="small">2-page printable PDF</div>
+              </div>
+              <div>⬇︎</div>
+            </a>
+
+            <!-- Instructions PDF 1 (placeholder) -->
+            <a class="btn gray" href="nervav5instructions-1.pdf" download>
+              <div>
+                Download Instructions (PDF #1)
+                <div class="small">Rename file or update link</div>
+              </div>
+              <div>⬇︎</div>
+            </a>
+
+            <!-- Instructions PDF 2 -->
+            <a class="btn blue" href="nervav5instructions-2.pdf" download>
+              <div>
+                Download Instructions (PDF #2)
+                <div class="small">Updated instructions</div>
+              </div>
+              <div>⬇︎</div>
+            </a>
+
+            <!-- Quadrant Tool -->
+            <a class="btn green" href="nerva_v5_demo_quadrants.html">
+              <div>
+                Open Quadrant Tool (Interactive)
+                <div class="small">Runs in browser</div>
+              </div>
+              <div>→</div>
+            </a>
+
+          </div>
+
+          <div class="footer" style="margin-top:14px;">
+            © Phasewell • Nerva v5 — hosted as a static site (fast + safe)
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
