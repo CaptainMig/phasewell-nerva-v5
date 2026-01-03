@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Nerva v5 — Quadrants + Phase Demo</title>
+  <style>
+    :root { --bg:#111; --panel:#1c1c1c; --ink:#eee; --muted:#b8b8b8; --grid:#2b2b2b; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background: var(--bg); color: var(--ink); padding: 20px; }
+    h2, h3 { margin: 0 0 12px 0; }
+    .wrap { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; }
+    .card { background: var(--panel); border: 1px solid #2a2a2a; border-radius: 10px; padding: 14px; }
+    .row { margin-bottom: 12px; }
+    label { display:block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    input[type="range"] { width: 100%; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    pre { background: #151515; padding: 12px; border-radius: 8px; overflow:auto; border:1px solid #242424; }
+    canvas { width: 100%; height: 520px; background:#0f0f0f; border-radius: 10px; border:1px solid #242424; }
+    .legend { display:grid; grid-template-columns: 1fr; gap:10px; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #3a3a3a; border-radius: 999px; font-size: 12px; color: var(--muted); }
+    .kv { display:grid; grid-template-columns: 140px 1fr; gap:8px 12px; font-size: 13px; }
+    .kv div:nth-child(odd){ color: var(--muted); }
+    .note { color: var(--muted); font-size: 12px; line-height: 1.35; }
+  </style>
+</head>
+<body>
+
+<h2>Nerva v5 — Quadrants + Phase Demo</h2>
+<p class="note">Runs locally in your browser. No uploads. Quadrants are the v4-style map; v5 adds EV + Integrity as a sub-layer.</p>
+
+<div class="wrap">
+  <div class="card">
+    <h3>Inputs</h3>
+
+    <div class="row">
+      <label>Emotion (E)</label>
+      <input id="emotion" type="range" min="-1" max="1" step="0.1" value="1">
+    </div>
+
+    <div class="row">
+      <label>Strategy (S)</label>
+      <input id="strategy" type="range" min="-1" max="1" step="0.1" value="-0.2">
+    </div>
+
+    <div class="row">
+      <label>Risk (R)</label>
+      <input id="risk" type="range" min="0" max="1" step="0.1" value="1">
+    </div>
+
+    <div class="row">
+      <label>Horizon Threshold (DII / τ)</label>
+      <input id="tau" type="range" min="0" max="5" step="0.1" value="1">
+      <div class="note">This is the commitment line (red circle radius = √τ).</div>
+    </div>
+
+    <div class="row">
+      <label>Previous Phase (prev φ) <span class="pill">stability</span></label>
+      <input id="prevPhi" type="range" min="-3.1416" max="3.1416" step="0.01" value="0">
+      <div class="note">Use this to simulate “same direction over time” (Δφ small → integrity higher).</div>
+    </div>
+
+    <hr style="border:0;border-top:1px solid #2a2a2a;margin:14px 0;">
+
+    <h3>v5 Value Model</h3>
+
+    <div class="row">
+      <label>Perceived Gain (PG)</label>
+      <input id="pg" type="range" min="0" max="1" step="0.01" value="0.9">
+    </div>
+
+    <div class="row">
+      <label>Blowback Probability (Pb)</label>
+      <input id="pb" type="range" min="0" max="1" step="0.01" value="0.2">
+    </div>
+
+    <div class="row">
+      <label>Blowback Impact (Ib)</label>
+      <input id="ib" type="range" min="0" max="1" step="0.01" value="0.3">
+    </div>
+
+    <div class="row">
+      <label>Expected Cost (EC)</label>
+      <input id="ec" type="range" min="0" max="1" step="0.01" value="0.1">
+    </div>
+
+    <div class="row">
+      <label>Evidence Quality (EQ)</label>
+      <input id="eq" type="range" min="0" max="1" step="0.01" value="0.8">
+    </div>
+
+    <div class="row">
+      <label>Justification Bias (JB)</label>
+      <input id="jb" type="range" min="0" max="1" step="0.01" value="0.2">
+    </div>
+
+    <hr style="border:0;border-top:1px solid #2a2a2a;margin:14px 0;">
+
+    <h3>Readout</h3>
+    <pre id="output" class="mono"></pre>
+  </div>
+
+  <div class="card">
+    <h3>Quadrant Map</h3>
+    <canvas id="map" width="900" height="520"></canvas>
+
+    <div class="legend" style="margin-top:14px;">
+      <h3>Legend (Lay Terms)</h3>
+      <div class="kv">
+        <div><span class="pill">X axis</span></div><div><b>Intent</b> = Emotion + Strategy (E + S). Right = more directed intent. Left = self-cancel / conflict.</div>
+        <div><span class="pill">Y axis</span></div><div><b>Risk</b> (R). Up = higher risk exposure.</div>
+        <div><span class="pill">Blue arrow</span></div><div>Your current decision state vector (where you are).</div>
+        <div><span class="pill">Red circle</span></div><div>Commitment line (Horizon/DII). If the arrow tip reaches it → “ready to commit”.</div>
+        <div><span class="pill">φ (phi)</span></div><div>Direction angle. 90° = “all risk, no intent.” Lower angles = more coherent intent.</div>
+        <div><span class="pill">EV</span></div><div>Expected Value = Gain − (Blowback + Costs). Positive means the move helps on average.</div>
+        <div><span class="pill">Integrity</span></div><div>Evidence × (1 − justification bias) × phase stability. Low integrity = “confident but unsupported.”</div>
+        <div><span class="pill">Decision</span></div><div>
+          <b>COMMIT_VALID</b> if EV ≥ 0 and Integrity ≥ 0.5<br>
+          <b>TOXIC_ESCALATION</b> if EV &lt; 0 or Integrity &lt; 0.5
+        </div>
+      </div>
+
+      <div class="note">
+        Quadrants (v4-style):<br>
+        • Top-right: <b>Bold Opportunity</b> (direct intent + high risk)<br>
+        • Bottom-right: <b>Clean Gain</b> (direct intent + lower risk)<br>
+        • Top-left: <b>Chaotic Risk</b> (conflicted intent + high risk)<br>
+        • Bottom-left: <b>Stuck / Noise</b> (conflicted intent + low risk)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===============================
+// Nerva v5 Core
+// ===============================
+
+function computeState(sliders) {
+  const x = sliders.emotion + sliders.strategy; // intent axis
+  const y = sliders.risk;                        // risk axis
+  const CE = x * x + y * y;                      // commitment energy (DII)
+  const phi = Math.atan2(y, x);                  // phase [-π, π]
+  return { x, y, CE, phi };
+}
+
+function computeValue(value, deltaPhi) {
+  const blowback = value.blowbackProb * value.blowbackImpact;
+  const EV = value.perceivedGain - (blowback + value.expectedCost);
+
+  const phaseStability = 1 - Math.min(Math.abs(deltaPhi) / Math.PI, 1);
+
+  const integrity =
+    value.evidenceQuality *
+    (1 - value.justificationBias) *
+    phaseStability;
+
+  return { EV, integrity, blowback, phaseStability };
+}
+
+function evaluateDecision(sliders, horizon, value, prevPhi = 0) {
+  const { x, y, CE, phi } = computeState(sliders);
+  const { EV, integrity, blowback, phaseStability } = computeValue(value, phi - prevPhi);
+
+  let decision = "COMMIT_VALID";
+  if (EV < 0 || integrity < 0.5) decision = "TOXIC_ESCALATION";
+
+  const reached = CE >= horizon.tau;
+
+  return {
+    x, y, CE,
+    phi_rad: phi,
+    phi_deg: (phi * 180 / Math.PI),
+    tau: horizon.tau,
+    reached_commitment: reached,
+    EV, integrity, blowback, phaseStability,
+    decision
+  };
+}
+
+function quadrantLabel(x, y) {
+  const intent = x; // E+S
+  const risk = y;
+  if (intent >= 0 && risk >= 0.5) return "Bold Opportunity (Gain + High Risk)";
+  if (intent >= 0 && risk < 0.5)  return "Clean Gain (Gain + Lower Risk)";
+  if (intent < 0 && risk >= 0.5)  return "Chaotic Risk (Conflicted + High Risk)";
+  return "Stuck / Noise (Conflicted + Low Risk)";
+}
+
+// ===============================
+// Rendering: v4-style Quadrants + v5 sub-layer
+// ===============================
+
+const canvas = document.getElementById("map");
+const ctx = canvas.getContext("2d");
+
+function draw(result) {
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+
+  // coordinate mapping:
+  // x in [-2, 2]  (because E+S ranges [-2, 2])
+  // y in [0, 1]
+  const xMin = -2, xMax = 2;
+  const yMin = 0, yMax = 1;
+
+  const pad = 40;
+  const plotW = w - pad*2;
+  const plotH = h - pad*2;
+
+  function X(x) { return pad + (x - xMin) / (xMax - xMin) * plotW; }
+  function Y(y) { return pad + (1 - (y - yMin) / (yMax - yMin)) * plotH; }
+
+  // background quadrants
+  ctx.fillStyle = "#141414";
+  ctx.fillRect(pad, pad, plotW, plotH);
+
+  // quadrant fills (subtle)
+  // top-right
+  ctx.fillStyle = "rgba(255,255,255,0.03)";
+  ctx.fillRect(X(0), Y(1), X(2)-X(0), Y(0.5)-Y(1));
+  // bottom-right
+  ctx.fillStyle = "rgba(255,255,255,0.02)";
+  ctx.fillRect(X(0), Y(0.5), X(2)-X(0), Y(0)-Y(0.5));
+  // top-left
+  ctx.fillStyle = "rgba(255,255,255,0.02)";
+  ctx.fillRect(X(-2), Y(1), X(0)-X(-2), Y(0.5)-Y(1));
+  // bottom-left
+  ctx.fillStyle = "rgba(255,255,255,0.015)";
+  ctx.fillRect(X(-2), Y(0.5), X(0)-X(-2), Y(0)-Y(0.5));
+
+  // axes + grid
+  ctx.strokeStyle = "#2b2b2b";
+  ctx.lineWidth = 1;
+  // border
+  ctx.strokeRect(pad, pad, plotW, plotH);
+  // vertical x=0
+  ctx.beginPath(); ctx.moveTo(X(0), pad); ctx.lineTo(X(0), pad+plotH); ctx.stroke();
+  // horizontal y=0.5
+  ctx.beginPath(); ctx.moveTo(pad, Y(0.5)); ctx.lineTo(pad+plotW, Y(0.5)); ctx.stroke();
+
+  // labels
+  ctx.fillStyle = "#b8b8b8";
+  ctx.font = "14px system-ui";
+  ctx.fillText("Intent (E+S)  ← Conflicted | Directed →", pad, 22);
+  ctx.fillText("Risk (R)  ↑", 12, pad);
+
+  // quadrant titles
+  ctx.font = "13px system-ui";
+  ctx.fillStyle = "rgba(255,255,255,0.65)";
+  ctx.fillText("Chaotic Risk", X(-1.95), Y(0.98));
+  ctx.fillText("Bold Opportunity", X(0.05), Y(0.98));
+  ctx.fillText("Stuck / Noise", X(-1.95), Y(0.48));
+  ctx.fillText("Clean Gain", X(0.05), Y(0.48));
+
+  // commitment circle centered at origin point (x=0,y=0)
+  // Note: our plot y starts at 0 at bottom and 1 at top; origin for circle is (x=0,y=0)
+  const originPx = { x: X(0), y: Y(0) };
+  // radius based on sqrt(tau) in state-space. Convert to pixels:
+  // state radius in x-y units, where x spans 4 units and y spans 1 unit (anisotropic),
+  // so we draw an approximate circle by scaling x and y separately (ellipse in screen space).
+  const r = Math.sqrt(Math.max(result.tau, 0));
+  const rx = (r / (xMax - xMin)) * plotW;      // x units to pixels
+  const ry = (r / (yMax - yMin)) * plotH;      // y units to pixels
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,80,80,0.9)";
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.ellipse(originPx.x, originPx.y, rx, ry, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.restore();
+
+  // arrow from origin to state point
+  const tip = { x: X(result.x), y: Y(result.y) };
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(120,180,255,0.95)";
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(originPx.x, originPx.y);
+  ctx.lineTo(tip.x, tip.y);
+  ctx.stroke();
+
+  // arrow head
+  const angle = Math.atan2(tip.y - originPx.y, tip.x - originPx.x);
+  const headLen = 14;
+  ctx.beginPath();
+  ctx.moveTo(tip.x, tip.y);
+  ctx.lineTo(tip.x - headLen*Math.cos(angle - Math.PI/7), tip.y - headLen*Math.sin(angle - Math.PI/7));
+  ctx.lineTo(tip.x - headLen*Math.cos(angle + Math.PI/7), tip.y - headLen*Math.sin(angle + Math.PI/7));
+  ctx.closePath();
+  ctx.fillStyle = "rgba(120,180,255,0.95)";
+  ctx.fill();
+  ctx.restore();
+
+  // decision label
+  const q = quadrantLabel(result.x, result.y);
+  const reachedTxt = result.reached_commitment ? "Commitment Threshold Reached" : "Not Yet Committed";
+  const decisionTxt = result.decision === "COMMIT_VALID" ? "COMMIT_VALID" : "TOXIC_ESCALATION";
+
+  ctx.fillStyle = decisionTxt === "COMMIT_VALID" ? "rgba(130,255,170,0.95)" : "rgba(255,120,120,0.95)";
+  ctx.font = "16px system-ui";
+  ctx.fillText(decisionTxt, pad, h - 14);
+
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.font = "14px system-ui";
+  ctx.fillText(q, pad + 170, h - 14);
+
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.font = "13px system-ui";
+  ctx.fillText(reachedTxt, pad + 510, h - 14);
+
+  // phase annotation near tip
+  ctx.fillStyle = "rgba(255,255,255,0.75)";
+  ctx.font = "13px system-ui";
+  ctx.fillText(`φ ≈ ${result.phi_deg.toFixed(1)}°`, Math.min(tip.x + 10, w-110), Math.max(tip.y - 8, 18));
+}
+
+function readInputs() {
+  return {
+    sliders: {
+      emotion: Number(document.getElementById("emotion").value),
+      strategy: Number(document.getElementById("strategy").value),
+      risk: Number(document.getElementById("risk").value),
+    },
+    horizon: {
+      tau: Number(document.getElementById("tau").value),
+      tauMax: 5,
+    },
+    value: {
+      perceivedGain: Number(document.getElementById("pg").value),
+      blowbackProb: Number(document.getElementById("pb").value),
+      blowbackImpact: Number(document.getElementById("ib").value),
+      expectedCost: Number(document.getElementById("ec").value),
+      evidenceQuality: Number(document.getElementById("eq").value),
+      justificationBias: Number(document.getElementById("jb").value),
+    },
+    prevPhi: Number(document.getElementById("prevPhi").value),
+  };
+}
+
+const output = document.getElementById("output");
+
+function update() {
+  const { sliders, horizon, value, prevPhi } = readInputs();
+  const result = evaluateDecision(sliders, horizon, value, prevPhi);
+
+  output.textContent = JSON.stringify({
+    ...result,
+    quadrant: quadrantLabel(result.x, result.y),
+  }, null, 2);
+
+  draw(result);
+}
+
+["emotion","strategy","risk","tau","pg","pb","ib","ec","eq","jb","prevPhi"].forEach(id => {
+  document.getElementById(id).addEventListener("input", update);
+});
+
+update();
+</script>
+
+</body>
+</html>
