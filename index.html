@@ -64,28 +64,27 @@
     }
 
     .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width:210px;
-    }
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
 
     .logo{
-      width:56px;
-      height:56px;
-      border-radius:16px;
-      border:1px solid #dbe1ea;
-      display:grid;
-      place-items:center;
-      overflow:hidden;
-      background:#fff;
-      flex:0 0 auto;
-    }
-    .logo img{
-      width:70%;
-      height:auto;
-      display:block;
-    }
+  width:56px;
+  height:56px;
+  border-radius:16px;
+  border:1px solid #dbe1ea;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  background:#fff;
+}
+.logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
 
     .titleBlock{
       flex:1;
@@ -99,6 +98,61 @@
       margin:0;
       line-height:1.1;
     }
+
+    /* Mission block (branded) */
+.missionBlock{
+  margin-top:18px;
+  padding:16px 18px;
+  border-radius:18px;
+  border:1px solid rgba(28, 54, 94, 0.10);
+  background:linear-gradient(
+    180deg,
+    rgba(40, 109, 255, 0.06),
+    rgba(255,255,255,0.75)
+  );
+  box-shadow:0 10px 30px rgba(15, 23, 42, 0.06);
+  position:relative;
+  max-width:680px;
+}
+
+.missionBlock:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:14px;
+  bottom:14px;
+  width:4px;
+  border-radius:6px;
+  background:linear-gradient(
+    180deg,
+    rgba(40, 109, 255, 0.85),
+    rgba(64, 154, 255, 0.55)
+  );
+}
+
+.missionHeader{
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:-0.2px;
+  margin:0 0 12px 0;
+  padding-left:10px;
+  color:#0b1220;
+}
+
+.missionBlock p{
+  margin:0 0 12px 0;
+  font-size:14px;
+  line-height:1.55;
+  color:var(--muted);
+  padding-left:10px;
+}
+
+.missionSmall{
+  margin-top:14px;
+  font-size:13px;
+  color:var(--muted);
+  opacity:0.92;
+}
 
     .subtitle{
       margin:4px 0 0;
@@ -220,30 +274,6 @@
       font-size:12px;
     }
 
-    .emailBox{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .emailBox input{
-      flex:1;
-      min-width:220px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      font-size:14px;
-    }
-    .emailBox button{
-      padding:12px 14px;
-      border-radius:14px;
-      border:0;
-      background:var(--black);
-      color:#fff;
-      font-weight:800;
-      cursor:pointer;
-    }
-
     /* Desktop layout */
     @media(min-width:860px){
       .grid{
@@ -263,26 +293,28 @@
     <div class="shell">
 
       <!-- Header -->
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo">
-            <!-- Replace with your Phasewell logo file if you have it -->
-            <img src="phasewell.png" alt="Phasewell" onerror="this.style.display='none'">
-          </div>
-          <div class="titleBlock">
-            <h1 class="title">Nerva v5 — Quick Guide</h1>
-            <div class="subtitle">Quadrants + phase (φ) + validity (EV × Integrity) • 2-page guide</div>
-            <div class="desc">Phasewell supports users in the design systems and events that survive their own extremes.</div>
-          </div>
-        </div>
+<div class="topbar">
+  <!-- Left logo -->
+  <div class="brand">
+    <div class="logo">
+      <img src="./assets/phasewell.png" alt="Phasewell" />
+    </div>
+  </div>
 
-        <div class="rightLogo">
-          <div class="logo">
-            <!-- Replace with your Nerva logo file if you have it -->
-            <img src="nerva.png" alt="Nerva" onerror="this.style.display='none'">
-          </div>
-        </div>
-      </div>
+  <!-- Title -->
+  <div class="titleBlock">
+    <h1 class="title">Nerva v5 — Quick Guide</h1>
+    <div class="subtitle">Quadrants + phase (ϕ) + validity (EV × Integrity) • 2-page guide</div>
+    <div class="desc">Phasewell supports users in the design systems and events that survive their own extremes.</div>
+  </div>
+
+  <!-- Right logo -->
+  <div class="rightLogo">
+    <div class="logo">
+      <img src="./assets/nerva.png" alt="Nerva" />
+    </div>
+  </div>
+</div>
 
       <!-- Chips -->
       <div class="chips">
@@ -308,18 +340,28 @@
             Tip: Users can print the HTML to PDF (File → Print → Save as PDF). Turn <b>Background graphics ON</b>.
           </div>
 
+<!-- Phasewell Mission -->
+<div class="missionBlock">
+  <div class="missionHeader">Phasewell Mission</div>
+
+  <p>
+    Phasewell helps people make high-stakes decisions with clarity — by turning
+    uncertainty into structured, explainable state.
+  </p>
+
+  <p>
+    Our tools translate emotion, risk, intent, and integrity into a simple vector
+    model so users can stabilize their direction, avoid volatility, and commit with
+    confidence.
+  </p>
+
+  <p class="missionSmall">
+    Phasewell is building decision systems that survive their own extremes — for
+    individuals, teams, and institutions.
+  </p>
+</div>
+
           <!-- Optional Email Capture Placeholder -->
-          <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
-            <h2 style="margin-bottom:6px;">Optional: Email updates (placeholder)</h2>
-            <p style="margin-bottom:10px;">
-              This does NOT store anything by default. If you want real capture + analytics, we’ll connect it to Mailchimp/Buttondown/Formspree later.
-            </p>
-            <form class="emailBox" onsubmit="event.preventDefault(); alert('Placeholder only — connect a form service to store emails.');">
-              <input type="email" placeholder="Enter email (optional)" />
-              <button type="submit">Notify me</button>
-            </form>
-          </div>
-        </div>
 
         <!-- Right: Actions -->
         <div class="card">
