@@ -281,6 +281,47 @@
   }
 }
 
+/* Mobile header fixes */
+@media (max-width: 520px){
+
+.topbar{
+  padding: 12px 12px;      /* tighter padding so nothing overflows */
+  gap: 10px;
+}
+
+.brand{
+  min-width: 0;            /* VERY important: allows flex children to shrink */
+  gap: 10px;
+}
+
+.titleBlock{
+  min-width: 0;            /* allows text to wrap instead of forcing logo outward */
+}
+
+.rightLogo{
+  margin-right: 0;         
+}
+
+.logo{
+  width: 44px;             /* shrink logo box */
+  height: 44px;
+  border-radius: 12px;
+}
+
+.logo img{
+  width: 78%;              /* keep image inside nicely */
+}
+
+.title{
+  font-size: 22px;         /* slight reduction so title fits */
+  line-height: 1.05;
+}
+
+.subtitle{
+  font-size: 13px;
+}
+}
+
     /* Desktop layout */
     @media(min-width:860px){
       .grid{
