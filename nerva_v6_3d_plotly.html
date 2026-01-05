@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Phasewell • Nerva v6 — 3D Threshold Field (Plotly)</title>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:#0f172a;
+    --muted:#aab4c7;
+    --text:#e8eefc;
+    --border:rgba(255,255,255,.10);
+    --accent:#4b78ff;
+    --accent2:#915aff;
+    --red:#ff4d4d;
+    --green:#39d98a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background: radial-gradient(1200px 800px at 30% 0%, rgba(75,120,255,.22), transparent 55%),
+                radial-gradient(900px 600px at 80% 10%, rgba(145,90,255,.18), transparent 55%),
+                var(--bg);
+    color:var(--text);
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:18px 14px 32px;}
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:14px; padding:14px 14px;
+    border:1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border-radius:22px;
+  }
+  .brand{display:flex; align-items:center; gap:12px; min-width:0;}
+  .logoBox{
+    width:50px; height:50px; border-radius:16px; border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(255,255,255,.06);
+    overflow:hidden;
+    flex:0 0 auto;
+  }
+  .logoBox img{width:100%; height:100%; object-fit:contain;}
+  .titleBlock{min-width:0; flex:1}
+  .title{margin:0; font-size:22px; line-height:1.05; letter-spacing:-.4px;}
+  .subtitle{margin-top:6px; font-size:13px; color:var(--muted); line-height:1.25;}
+  .desc{margin-top:6px; font-size:12px; color:var(--muted); opacity:.92; line-height:1.25;}
+  .grid{display:grid; grid-template-columns: 1.35fr 0.85fr; gap:14px; margin-top:14px;}
+  .card{
+    border:1px solid var(--border);
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+    border-radius:22px;
+    padding:14px;
+    box-shadow: 0 14px 40px rgba(0,0,0,.35);
+    min-width:0;
+  }
+  .card h2{margin:0 0 10px 0; font-size:16px; letter-spacing:-.2px;}
+  .muted{color:var(--muted);}
+  #plot{width:100%; height:520px;}
+  .row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:10px 0;}
+  .row label{font-size:12px; color:var(--muted); flex:1}
+  .row output{font-size:12px; color:var(--text); min-width:56px; text-align:right;}
+  input[type="range"]{width:100%;}
+  .pillBar{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+  }
+  .pill{
+    border:1px solid var(--border);
+    background: rgba(255,255,255,.05);
+    padding:8px 10px;
+    border-radius:999px;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .pill b{color:var(--text); font-weight:800}
+  .btnRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;}
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    padding:10px 12px; border-radius:14px;
+    background: linear-gradient(180deg, rgba(75,120,255,.95), rgba(75,120,255,.68));
+    color:white; font-weight:800; font-size:13px;
+    box-shadow: 0 12px 30px rgba(75,120,255,.24);
+  }
+  .btn.secondary{
+    background: rgba(255,255,255,.08);
+    box-shadow:none;
+    border:1px solid var(--border);
+    color:var(--text);
+  }
+  .note{
+    margin-top:10px; padding:12px 12px;
+    border-radius:18px;
+    border:1px solid rgba(75,120,255,.22);
+    background: rgba(75,120,255,.08);
+    color:rgba(232,238,252,.96);
+    font-size:12.5px; line-height:1.4;
+  }
+  .note b{color:white}
+  .foot{
+    margin-top:10px;
+    font-size:11px; color:var(--muted); opacity:.9;
+  }
+
+  /* Mobile */
+  @media (max-width: 860px){
+    .grid{grid-template-columns: 1fr;}
+    #plot{height:470px;}
+  }
+  @media (max-width: 520px){
+    .topbar{flex-direction:column; align-items:center; text-align:center; gap:10px;}
+    .brand{justify-content:center;}
+    .titleBlock{max-width:360px;}
+    .desc{display:none;}
+    #plot{height:430px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logoBox" title="Phasewell">
+        <img alt="Phasewell" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' rx='26' fill='%230f172a'/%3E%3Cpath d='M26 78c10-28 26-44 48-44 10 0 19 3 26 9-10 2-18 8-22 18-6-6-13-9-22-9-18 0-28 14-30 26z' fill='%234b78ff'/%3E%3Cpath d='M34 86c8-20 20-32 36-32 8 0 15 2 20 7-8 2-14 7-17 14-5-4-10-6-17-6-13 0-20 9-22 17z' fill='%23915aff'/%3E%3C/svg%3E"/>
+      </div>
+    </div>
+
+    <div class="titleBlock">
+      <h1 class="title">Nerva v6 — 3D Threshold Field</h1>
+      <div class="subtitle">3D state vector (x,y,z) with τ-threshold sphere + floor projection • Integrity as Z, Coherence as style</div>
+      <div class="desc">Phasewell supports users in the design systems and events that survive their own extremes.</div>
+    </div>
+
+    <div class="logoBox" title="Nerva">
+      <img alt="Nerva" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Crect width='120' height='120' rx='26' fill='%230f172a'/%3E%3Cpath d='M30 78V42h18c14 0 22 7 22 18 0 10-7 16-18 16H44v2H30zm14-14h6c6 0 9-2 9-6 0-4-3-6-9-6h-6v12z' fill='%23e8eefc'/%3E%3Cpath d='M80 78l-9-14c8-2 12-7 12-14 0-10-7-16-19-16H66v44h14V64l10 14h-10z' fill='%234b78ff'/%3E%3C/svg%3E"/>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div id="plot"></div>
+      <div class="note">
+        <b>Symmetry test:</b> In 3D, the red τ sphere is the commitment boundary.
+        The blue state vector must <b>reach</b> the boundary to make commitment available.
+        <br/><br/>
+        <b>Can’t reach</b> → missing degrees of freedom (options/time/evidence/resources).<br/>
+        <b>Surpass without containment</b> → too much energy without structure (volatility / poor stability).
+      </div>
+      <div class="foot">Tip: rotate with finger • pinch to zoom • the floor shadow is your current 2D projection.</div>
+    </div>
+
+    <div class="card">
+      <h2>Controls</h2>
+
+      <div class="row">
+        <label>Emotion (E) <span class="muted">(-1 to +1)</span></label>
+        <output id="Eo">0.30</output>
+      </div>
+      <input id="E" type="range" min="-1" max="1" step="0.01" value="0.30"/>
+
+      <div class="row">
+        <label>Strategy (S) <span class="muted">(-1 to +1)</span></label>
+        <output id="So">0.20</output>
+      </div>
+      <input id="S" type="range" min="-1" max="1" step="0.01" value="0.20"/>
+
+      <div class="row">
+        <label>Risk (R) <span class="muted">(-1 to +1)</span></label>
+        <output id="Ro">0.60</output>
+      </div>
+      <input id="R" type="range" min="-1" max="1" step="0.01" value="0.60"/>
+
+      <hr style="border:none;border-top:1px solid var(--border); margin:14px 0;"/>
+
+      <div class="row">
+        <label>Support <span class="muted">(0 to 1)</span></label>
+        <output id="SupO">0.70</output>
+      </div>
+      <input id="SUP" type="range" min="0" max="1" step="0.01" value="0.70"/>
+
+      <div class="row">
+        <label>Stability <span class="muted">(0 to 1)</span></label>
+        <output id="StabO">0.65</output>
+      </div>
+      <input id="STAB" type="range" min="0" max="1" step="0.01" value="0.65"/>
+
+      <div class="row">
+        <label>τ / DII Threshold <span class="muted">(0 to 1)</span></label>
+        <output id="TauO">0.08</output>
+      </div>
+      <input id="TAU" type="range" min="0" max="1" step="0.01" value="0.08"/>
+
+      <div class="pillBar">
+        <div class="pill"><b>x</b> = E + S</div>
+        <div class="pill"><b>y</b> = R</div>
+        <div class="pill"><b>z</b> = Support × Stability</div>
+        <div class="pill"><b>φ</b> = atan2(y,x)</div>
+        <div class="pill"><b>coherence</b> = exp(-k·|Δφ|)</div>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn" id="demo">Show Symmetry Demo</button>
+        <button class="btn secondary" id="reset">Reset</button>
+      </div>
+
+      <div class="note" style="margin-top:12px">
+        <b>Readout</b><br/>
+        <span id="readout" class="muted"></span>
+      </div>
+
+      <div class="foot">Built with Plotly.js • Single-file HTML • Ready for Vercel</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const el = (id)=>document.getElementById(id);
+
+  const sliders = {
+    E: el('E'), S: el('S'), R: el('R'),
+    SUP: el('SUP'), STAB: el('STAB'), TAU: el('TAU')
+  };
+  const outs = {
+    Eo: el('Eo'), So: el('So'), Ro: el('Ro'),
+    SupO: el('SupO'), StabO: el('StabO'), TauO: el('TauO'),
+    readout: el('readout')
+  };
+
+  // state for coherence (phase stability)
+  let prevPhi = null;
+
+  function fmt(n){ return (Math.round(n*100)/100).toFixed(2); }
+
+  function computeState(){
+    const E = parseFloat(sliders.E.value);
+    const S = parseFloat(sliders.S.value);
+    const R = parseFloat(sliders.R.value);
+    const SUP = parseFloat(sliders.SUP.value);
+    const STAB = parseFloat(sliders.STAB.value);
+    const TAU = parseFloat(sliders.TAU.value);
+
+    const x = E + S;
+    const y = R;
+    const z = SUP * STAB;     // Integrity
+    const CE = x*x + y*y + z*z;
+    const phi = Math.atan2(y, x);
+    const dphi = (prevPhi === null) ? 0 : Math.abs(phi - prevPhi);
+    // wrap to [-pi, pi]
+    const wrapped = Math.min(dphi, Math.abs(dphi - 2*Math.PI));
+    const k = 0.9;
+    const coherence = Math.exp(-k * wrapped);  // 0..1
+    prevPhi = phi;
+
+    // Threshold radius: r = sqrt(tau)
+    const r = Math.sqrt(Math.max(TAU, 0));
+
+    const reached = Math.sqrt(CE) >= r;
+    return {E,S,R,SUP,STAB,TAU,x,y,z,CE,phi,wrapped,coherence,r,reached};
+  }
+
+  function sphereSurface(r, stepsTheta=28, stepsPhi=18){
+    const theta = Array.from({length: stepsTheta}, (_,i)=> i*(2*Math.PI/(stepsTheta-1)));
+    const phi = Array.from({length: stepsPhi}, (_,j)=> j*(Math.PI/(stepsPhi-1)));
+    const X=[], Y=[], Z=[];
+    for (let j=0;j<phi.length;j++){
+      const rowX=[], rowY=[], rowZ=[];
+      for (let i=0;i<theta.length;i++){
+        const t=theta[i], p=phi[j];
+        rowX.push(r*Math.cos(t)*Math.sin(p));
+        rowY.push(r*Math.sin(t)*Math.sin(p));
+        rowZ.push(r*Math.cos(p));
+      }
+      X.push(rowX); Y.push(rowY); Z.push(rowZ);
+    }
+    return {X,Y,Z};
+  }
+
+  function updateOutputs(s){
+    outs.Eo.textContent = fmt(s.E);
+    outs.So.textContent = fmt(s.S);
+    outs.Ro.textContent = fmt(s.R);
+    outs.SupO.textContent = fmt(s.SUP);
+    outs.StabO.textContent = fmt(s.STAB);
+    outs.TauO.textContent = fmt(s.TAU);
+
+    outs.readout.innerHTML =
+      `x = <b>${fmt(s.x)}</b>, y = <b>${fmt(s.y)}</b>, z = <b>${fmt(s.z)}</b> (Integrity)<br/>`+
+      `τ = <b>${fmt(s.TAU)}</b>, r = √τ = <b>${fmt(s.r)}</b><br/>`+
+      `‖v‖ = √CE = <b>${fmt(Math.sqrt(s.CE))}</b> • CE = <b>${fmt(s.CE)}</b><br/>`+
+      `φ = <b>${fmt(s.phi)}</b> rad • Δφ = <b>${fmt(s.wrapped)}</b> • coherence = <b>${fmt(s.coherence)}</b><br/>`+
+      `commit reachable: ${s.reached ? '<b style="color:var(--green)">YES</b>' : '<b style="color:var(--red)">NO</b>'}`;
+  }
+
+  let showDemo = false;
+
+  function buildPlot(){
+    const s = computeState();
+    updateOutputs(s);
+
+    // Threshold sphere
+    const sp = sphereSurface(s.r);
+    const sphere = {
+      type:'surface',
+      x: sp.X, y: sp.Y, z: sp.Z,
+      opacity: 0.22,
+      showscale:false,
+      colorscale: [[0, 'rgba(255,77,77,0.35)'], [1, 'rgba(255,77,77,0.35)']],
+      hoverinfo:'skip'
+    };
+
+    // Vector (origin -> state)
+    const width = 6 + 12*s.coherence;  // coherence increases thickness
+    const opacity = 0.35 + 0.65*s.coherence;
+    const vector = {
+      type:'scatter3d',
+      mode:'lines+markers',
+      x:[0, s.x], y:[0, s.y], z:[0, s.z],
+      line:{color:`rgba(75,120,255,${opacity})`, width: width},
+      marker:{size:[2,6], color:`rgba(75,120,255,${opacity})`},
+      hovertemplate:`State vector<br>x=%{x:.2f}<br>y=%{y:.2f}<br>z=%{z:.2f}<extra></extra>`
+    };
+
+    // Floor projection (origin -> (x,y,0))
+    const shadow = {
+      type:'scatter3d',
+      mode:'lines+markers',
+      x:[0, s.x], y:[0, s.y], z:[0, 0],
+      line:{color:'rgba(200,210,230,0.25)', width: 4},
+      marker:{size:[2,4], color:'rgba(200,210,230,0.25)'},
+      hoverinfo:'skip'
+    };
+
+    // Axis lines (subtle)
+    const axes = [
+      {x:[-1.6,1.6], y:[0,0], z:[0,0]},
+      {x:[0,0], y:[-1.6,1.6], z:[0,0]},
+      {x:[0,0], y:[0,0], z:[0,1.2]}
+    ].map((a)=>({
+      type:'scatter3d', mode:'lines',
+      x:a.x, y:a.y, z:a.z,
+      line:{color:'rgba(255,255,255,0.12)', width:2},
+      hoverinfo:'skip'
+    }));
+
+    // Demo vectors: can't reach vs surpass
+    const demoTraces = [];
+    if(showDemo){
+      const r = s.r;
+      // can't reach (short vector inside sphere)
+      demoTraces.push({
+        type:'scatter3d', mode:'lines+markers',
+        x:[0, r*0.65], y:[0, r*0.10], z:[0, r*0.20],
+        line:{color:'rgba(255,255,255,0.45)', width:6},
+        marker:{size:[2,5], color:'rgba(255,255,255,0.45)'},
+        name:'Can’t reach',
+        hovertemplate:`Can’t reach<br>inside τ sphere<extra></extra>`
+      });
+      // surpass without containment (longer, low z)
+      demoTraces.push({
+        type:'scatter3d', mode:'lines+markers',
+        x:[0, r*1.55], y:[0, r*1.10], z:[0, r*0.15],
+        line:{color:'rgba(145,90,255,0.65)', width:8},
+        marker:{size:[2,6], color:'rgba(145,90,255,0.65)'},
+        name:'Surpass (low containment)',
+        hovertemplate:`Surpass (low containment)<br>energy high, integrity low<extra></extra>`
+      });
+    }
+
+    const layout = {
+      margin:{l:0,r:0,t:0,b:0},
+      paper_bgcolor:'rgba(0,0,0,0)',
+      plot_bgcolor:'rgba(0,0,0,0)',
+      scene:{
+        bgcolor:'rgba(0,0,0,0)',
+        xaxis:{title:'Intent (x = E + S)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        yaxis:{title:'Risk (y = R)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        zaxis:{title:'Integrity (z = Support × Stability)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        aspectmode:'cube',
+        camera:{eye:{x:1.35,y:1.25,z:0.9}}
+      },
+      showlegend: showDemo,
+      legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
+    };
+
+    const data = [sphere, ...axes, shadow, vector, ...demoTraces];
+    Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
+  }
+
+  function bind(){
+    Object.values(sliders).forEach(sl=>{
+      sl.addEventListener('input', ()=>{
+        buildPlot();
+      });
+    });
+
+    el('demo').addEventListener('click', ()=>{
+      showDemo = !showDemo;
+      el('demo').textContent = showDemo ? 'Hide Symmetry Demo' : 'Show Symmetry Demo';
+      buildPlot();
+    });
+
+    el('reset').addEventListener('click', ()=>{
+      sliders.E.value = 0.30;
+      sliders.S.value = 0.20;
+      sliders.R.value = 0.60;
+      sliders.SUP.value = 0.70;
+      sliders.STAB.value = 0.65;
+      sliders.TAU.value = 0.08;
+      prevPhi = null;
+      showDemo = false;
+      el('demo').textContent = 'Show Symmetry Demo';
+      buildPlot();
+    });
+  }
+
+  bind();
+  buildPlot();
+})();
+</script>
+</body>
+</html>
