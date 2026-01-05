@@ -358,7 +358,7 @@ const axes = [
     showlegend: true,
     hoverinfo: 'skip'
   }
-];
+];// PASTE axisLabels RIGHT HERE
 // Axis endpoint labels (anchored to axes)
 const axisLabels = [
   {
@@ -439,7 +439,7 @@ const axisLabels = [
       legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
     };
 
-    const data = [vector, shadow, sphere, ...axes, ...axisLabels, ...demoTraces];
+    const data = [sphere, ...axes, ...axisLabels, shadow, vector, ...demoTraces];
     Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
   }
 
