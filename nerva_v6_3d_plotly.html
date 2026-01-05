@@ -451,6 +451,10 @@ const axisLabels = [
 },
     };
 
+    if (window.innerWidth < 520) {
+  layout.legend.font.size = 11;
+  layout.scene.camera.eye = { x: 1.6, y: 1.4, z: 1.0 };
+}
     const data = [sphere, ...axes, ...axisLabels, shadow, vector, ...demoTraces];
     Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
   }
