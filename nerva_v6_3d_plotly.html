@@ -308,6 +308,8 @@
       showscale:false,
       colorscale: [[0, 'rgba(255,77,77,0.35)'], [1, 'rgba(255,77,77,0.35)']],
       hoverinfo:'skip'
+      name: "τ boundary",
+      showlegend: false,
     };
 
     // Vector (origin -> state)
@@ -330,6 +332,8 @@
       line:{color:'rgba(200,210,230,0.25)', width: 4},
       marker:{size:[2,4], color:'rgba(200,210,230,0.25)'},
       hoverinfo:'skip'
+      name: "shadow projection",
+      showlegend: false,
     };
 
     // Axis lines (subtle)
@@ -436,7 +440,15 @@ const axisLabels = [
         camera:{eye:{x:1.35,y:1.25,z:0.9}}
       },
       showlegend: true,
-      legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
+      legend: {
+  x: 0.02,
+  y: 0.98,
+  xanchor: "left",
+  yanchor: "top",
+  bgcolor: "rgba(0,0,0,0)",
+  font: { color: "rgba(232,238,252,0.9)", size: 12 },
+  orientation: "v"
+},
     };
 
     const data = [sphere, ...axes, ...axisLabels, shadow, vector, ...demoTraces];
