@@ -359,6 +359,45 @@ const axes = [
     hoverinfo: 'skip'
   }
 ];
+// Axis endpoint labels (anchored to axes)
+const axisLabels = [
+  {
+    type: 'scatter3d',
+    mode: 'text',
+    x: [1.65],
+    y: [0],
+    z: [0],
+    text: ['x = Intent (E+S)'],
+    textposition: 'middle right',
+    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
+    hoverinfo: 'skip',
+    showlegend: false
+  },
+  {
+    type: 'scatter3d',
+    mode: 'text',
+    x: [0],
+    y: [1.65],
+    z: [0],
+    text: ['y = Risk (R)'],
+    textposition: 'top center',
+    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
+    hoverinfo: 'skip',
+    showlegend: false
+  },
+  {
+    type: 'scatter3d',
+    mode: 'text',
+    x: [0],
+    y: [0],
+    z: [1.25],
+    text: ['z = Integrity (Support×Stability)'],
+    textposition: 'top center',
+    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
+    hoverinfo: 'skip',
+    showlegend: false
+  }
+];
 
     // Demo vectors: can't reach vs surpass
     const demoTraces = [];
@@ -400,7 +439,7 @@ const axes = [
       legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
     };
 
-    const data = [vector, shadow, sphere, ...axes, ...demoTraces];
+    const data = [vector, shadow, sphere, ...axes, ...axisLabels, ...demoTraces];
     Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
   }
 
