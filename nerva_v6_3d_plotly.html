@@ -333,16 +333,32 @@
     };
 
     // Axis lines (subtle)
-    const axes = [
-      {x:[-1.6,1.6], y:[0,0], z:[0,0]},
-      {x:[0,0], y:[-1.6,1.6], z:[0,0]},
-      {x:[0,0], y:[0,0], z:[0,1.2]}
-    ].map((a)=>({
-      type:'scatter3d', mode:'lines',
-      x:a.x, y:a.y, z:a.z,
-      line:{color:'rgba(255,255,255,0.12)', width:2},
-      hoverinfo:'skip'
-    }));
+const axes = [
+  {
+    type: 'scatter3d', mode: 'lines',
+    x: [-1.6, 1.6], y: [0, 0], z: [0, 0],
+    line: {color: 'rgba(255,255,255,0.12)', width: 2},
+    name: 'x = Intent (E+S)',
+    showlegend: true,
+    hoverinfo: 'skip'
+  },
+  {
+    type: 'scatter3d', mode: 'lines',
+    x: [0, 0], y: [-1.6, 1.6], z: [0, 0],
+    line: {color: 'rgba(255,255,255,0.12)', width: 2},
+    name: 'y = Risk (R)',
+    showlegend: true,
+    hoverinfo: 'skip'
+  },
+  {
+    type: 'scatter3d', mode: 'lines',
+    x: [0, 0], y: [0, 0], z: [0, 1.2],
+    line: {color: 'rgba(255,255,255,0.12)', width: 2},
+    name: 'z = Integrity (Support×Stability)',
+    showlegend: true,
+    hoverinfo: 'skip'
+  }
+];
 
     // Demo vectors: can't reach vs surpass
     const demoTraces = [];
@@ -354,7 +370,7 @@
         x:[0, r*0.65], y:[0, r*0.10], z:[0, r*0.20],
         line:{color:'rgba(255,255,255,0.45)', width:6},
         marker:{size:[2,5], color:'rgba(255,255,255,0.45)'},
-        name:'Can’t reach',
+        name:"Can't reach τ",
         hovertemplate:`Can’t reach<br>inside τ sphere<extra></extra>`
       });
       // surpass without containment (longer, low z)
@@ -363,7 +379,7 @@
         x:[0, r*1.55], y:[0, r*1.10], z:[0, r*0.15],
         line:{color:'rgba(145,90,255,0.65)', width:8},
         marker:{size:[2,6], color:'rgba(145,90,255,0.65)'},
-        name:'Surpass (low containment)',
+        name:"Surpass τ (low containment)",
         hovertemplate:`Surpass (low containment)<br>energy high, integrity low<extra></extra>`
       });
     }
@@ -374,17 +390,17 @@
       plot_bgcolor:'rgba(0,0,0,0)',
       scene:{
         bgcolor:'rgba(0,0,0,0)',
-        xaxis:{title:'Intent (x = E + S)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
-        yaxis:{title:'Risk (y = R)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
-        zaxis:{title:'Integrity (z = Support × Stability)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        xaxis:{title:'x = Intent (E + S)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        yaxis:{title:'y = Risk (R)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        zaxis:{title:'z = Integrity (Support × Stability)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
         aspectmode:'cube',
         camera:{eye:{x:1.35,y:1.25,z:0.9}}
       },
-      showlegend: showDemo,
+      showlegend: true,
       legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
     };
 
-    const data = [sphere, ...axes, shadow, vector, ...demoTraces];
+    const data = [vector, shadow, sphere, ...axes, ...demoTraces];
     Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
   }
 
