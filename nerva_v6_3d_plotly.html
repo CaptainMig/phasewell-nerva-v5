@@ -308,8 +308,6 @@
       showscale:false,
       colorscale: [[0, 'rgba(255,77,77,0.35)'], [1, 'rgba(255,77,77,0.35)']],
       hoverinfo:'skip'
-      name: "τ boundary",
-      showlegend: false,
     };
 
     // Vector (origin -> state)
@@ -332,115 +330,19 @@
       line:{color:'rgba(200,210,230,0.25)', width: 4},
       marker:{size:[2,4], color:'rgba(200,210,230,0.25)'},
       hoverinfo:'skip'
-      name: "shadow projection",
-      showlegend: false,
     };
 
     // Axis lines (subtle)
-const axes = [
-  {
-    type: 'scatter3d', mode: 'lines',
-    x: [-1.6, 1.6], y: [0, 0], z: [0, 0],
-    line: {color: 'rgba(255,255,255,0.12)', width: 2},
-    name: 'x = Intent (E+S)',
-    showlegend: true,
-    hoverinfo: 'skip'
-  },
-  {
-    type: 'scatter3d', mode: 'lines',
-    x: [0, 0], y: [-1.6, 1.6], z: [0, 0],
-    line: {color: 'rgba(255,255,255,0.12)', width: 2},
-    name: 'y = Risk (R)',
-    showlegend: true,
-    hoverinfo: 'skip'
-  },
-  {
-    type: 'scatter3d', mode: 'lines',
-    x: [0, 0], y: [0, 0], z: [0, 1.2],
-    line: {color: 'rgba(255,255,255,0.12)', width: 2},
-    name: 'z = Integrity (Support×Stability)',
-    showlegend: true,
-    hoverinfo: 'skip'
-  }
-];// Axis label markers (text labels anchored at axis ends)
-const axisLabels = [
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [1.65],
-    y: [0],
-    z: [0],
-    text: ['x = Intent (E+S)'],
-    textposition: 'middle left',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  },
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [0],
-    y: [1.65],
-    z: [0],
-    text: ['y = Risk (R)'],
-    textposition: 'middle left',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  },
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [0],
-    y: [0],
-    z: [1.25],
-    text: ['z = Integrity (Support×Stability)'],
-    textposition: 'top center',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  }
-];
-// PASTE axisLabels RIGHT HERE
-// Axis endpoint labels (anchored to axes)
-const axisLabels = [
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [1.65],
-    y: [0],
-    z: [0],
-    text: ['x = Intent (E+S)'],
-    textposition: 'middle right',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  },
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [0],
-    y: [1.65],
-    z: [0],
-    text: ['y = Risk (R)'],
-    textposition: 'top center',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  },
-  {
-    type: 'scatter3d',
-    mode: 'text',
-    x: [0],
-    y: [0],
-    z: [1.25],
-    text: ['z = Integrity (Support×Stability)'],
-    textposition: 'top center',
-    textfont: { size: 12, color: 'rgba(232,238,252,0.85)' },
-    hoverinfo: 'skip',
-    showlegend: false
-  }
-];
+    const axes = [
+      {x:[-1.6,1.6], y:[0,0], z:[0,0]},
+      {x:[0,0], y:[-1.6,1.6], z:[0,0]},
+      {x:[0,0], y:[0,0], z:[0,1.2]}
+    ].map((a)=>({
+      type:'scatter3d', mode:'lines',
+      x:a.x, y:a.y, z:a.z,
+      line:{color:'rgba(255,255,255,0.12)', width:2},
+      hoverinfo:'skip'
+    }));
 
     // Demo vectors: can't reach vs surpass
     const demoTraces = [];
@@ -452,7 +354,7 @@ const axisLabels = [
         x:[0, r*0.65], y:[0, r*0.10], z:[0, r*0.20],
         line:{color:'rgba(255,255,255,0.45)', width:6},
         marker:{size:[2,5], color:'rgba(255,255,255,0.45)'},
-        name:"Can't reach τ",
+        name:'Can’t reach',
         hovertemplate:`Can’t reach<br>inside τ sphere<extra></extra>`
       });
       // surpass without containment (longer, low z)
@@ -461,7 +363,7 @@ const axisLabels = [
         x:[0, r*1.55], y:[0, r*1.10], z:[0, r*0.15],
         line:{color:'rgba(145,90,255,0.65)', width:8},
         marker:{size:[2,6], color:'rgba(145,90,255,0.65)'},
-        name:"Surpass τ (low containment)",
+        name:'Surpass (low containment)',
         hovertemplate:`Surpass (low containment)<br>energy high, integrity low<extra></extra>`
       });
     }
@@ -472,42 +374,18 @@ const axisLabels = [
       plot_bgcolor:'rgba(0,0,0,0)',
       scene:{
         bgcolor:'rgba(0,0,0,0)',
-        xaxis:{title:'x = Intent (E + S)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
-        yaxis:{title:'y = Risk (R)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
-        zaxis:{title:'z = Integrity (Support × Stability)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        xaxis:{title:'Intent (x = E + S)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        yaxis:{title:'Risk (y = R)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
+        zaxis:{title:'Integrity (z = Support × Stability)', zeroline:false, gridcolor:'rgba(255,255,255,0.06)', tickcolor:'rgba(255,255,255,0.12)'},
         aspectmode:'cube',
         camera:{eye:{x:1.35,y:1.25,z:0.9}}
       },
-      showlegend: true,
-      legend: {
-  x: 0.02,
-  y: 0.98,
-  xanchor: "left",
-  yanchor: "top",
-  bgcolor: "rgba(0,0,0,0)",
-  font: { color: "rgba(232,238,252,0.9)", size: 12 },
-  orientation: "v"
-},
-legend: {
-  x: 0.55,
-  y: 1,
-  xanchor: "left",
-  yanchor: "top",
-  bgcolor: "rgba(0,0,0,0)",
-  font: { color: "rgba(232,238,252,0.9)" }
-},
+      showlegend: showDemo,
+      legend:{bgcolor:'rgba(0,0,0,0)', font:{color:'rgba(232,238,252,.9)'}}
     };
 
- // ✅ MOBILE PATCH HERE
- if (window.innerWidth < 520) {
-  layout.legend.font.size = 11;
-  layout.legend.x = 0.40;
-  layout.legend.y = 0.98;
-}
-
-
-const data = [sphere, ...axes, ...axisLabels, shadow, vector, ...demoTraces];
-Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
+    const data = [sphere, ...axes, shadow, vector, ...demoTraces];
+    Plotly.react('plot', data, layout, {displayModeBar:false, responsive:true});
   }
 
   function bind(){
